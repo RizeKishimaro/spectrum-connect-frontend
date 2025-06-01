@@ -1,3 +1,4 @@
+
 "use client"
 
 import {
@@ -12,7 +13,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Clock, UserCog, SettingsIcon, Home, DoorOpen } from "lucide-react"
+import { Clock, UserCog, SettingsIcon, Home, LogOut } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { useWebPhone } from "@/contexts/web-phone-context"
 
 interface AgentSidebarProps {
   currentSection: string
@@ -20,15 +23,18 @@ interface AgentSidebarProps {
 }
 
 export function AgentSidebar({ currentSection, setCurrentSection }: AgentSidebarProps) {
+  const { phoneState } = useWebPhone()
+
   const menuItems = [
     { id: "home", label: "Home", icon: Home },
     { id: "recent-calls", label: "Recent Calls", icon: Clock },
     { id: "account", label: "Account Management", icon: UserCog },
     { id: "settings", label: "Settings", icon: SettingsIcon },
+    { id: "logout", label: "Logout", icon: LogOut }
   ]
 
   return (
-    <Sidebar className="block">
+    <Sidebar>
       <SidebarHeader className="border-b">
         <div className="flex items-center gap-2 px-4 py-2">
           <SidebarTrigger />
@@ -61,9 +67,21 @@ export function AgentSidebar({ currentSection, setCurrentSection }: AgentSidebar
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-green-500"></div>
-          <span className="text-xs">Agent Status: Available</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div
+              className={`h-2 w-2 rounded-full ${phoneState === "oncall"
+                ? "bg-blue-500"
+                : phoneState === "ringing"
+                  ? "bg-yellow-500 animate-pulse"
+                  : "bg-green-500"
+                }`}
+            ></div>
+            <span className="text-xs">
+              {phoneState === "oncall" ? "On Call" : phoneState === "ringing" ? "Incoming Call" : "Available"}
+            </span>
+          </div>
+          <ThemeToggle />
         </div>
       </SidebarFooter>
       <SidebarRail />

@@ -12,7 +12,7 @@ import { NotificationSettings } from "./notification-settings"
 export function Settings() {
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-5 min-h-screen">
       <h2 className="text-3xl font-bold tracking-tight ms-4">Settings</h2>
 
       <Tabs defaultValue="appearance" className="w-full">

@@ -5,6 +5,8 @@ import { AgentPortal } from './components/agent-portal'
 import { LoginPage } from './pages/Login'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { JSX } from 'react'
+import { WebPhoneProvider } from './contexts/web-phone-context'
+import { SidebarProvider } from './components/ui/sidebar'
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { isAuthenticated } = useAuth()
@@ -13,19 +15,26 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+
+      <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/portal" element={
             <PrivateRoute>
-              <AgentPortal />
+
+              <SidebarProvider>
+                <WebPhoneProvider>
+                  <AgentPortal />
+                </WebPhoneProvider>
+              </SidebarProvider>
             </PrivateRoute>
           } />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+
+      </AuthProvider>
+    </Router>
   )
 }
 

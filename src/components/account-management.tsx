@@ -4,11 +4,67 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import axiosClient from "@/hooks/axiosClient"
+import { useSelector } from "react-redux"
+import { ReducersTypes } from "@/redux/store/store"
+import { useState } from "react"
+import { useDispatch } from "react-redux"
+import { setUser } from "@/redux/actions/userAction"
 
 export function AccountManagement() {
+
+  const agent = useSelector((state: ReducersTypes) => state.user.user)
+  const [firstName, setFirstName] = useState(agent.user.firstName);
+  const [lastName, setLastName] = useState(agent.user.lastName);
+  const [phoneNumber, setPhoneNumber] = useState(agent.user.phoneNumber);
+  const [sipUname, setSipUname] = useState(agent.user.sipUname);
+  const [sipPassword, setSipPassword] = useState("");
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [previewURL, setPreviewURL] = useState("/placeholder.svg?height=80&width=80");
+
+  const dispatch = useDispatch();
+
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("phoneNumber", phoneNumber);
+    formData.append("sipUname", sipUname);
+    formData.append("sipPassword", sipPassword);
+
+    if (profilePicture) {
+      formData.append("profilePicture", profilePicture);
+    }
+
+    try {
+      const res = await axiosClient.patch(`/agents/${agent.id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Update complete~ 💕", res.data);
+      const payload = res.data
+      localStorage.setItem("token", payload.access_token)
+      localStorage.setItem("user", JSON.stringify(payload.user))
+      dispatch(setUser({
+        name: payload.user.name,
+        id: payload.user.id,
+        user: payload.user
+      }))
+    } catch (err) {
+      console.error("Nyaa~ error happened 💔", err);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfilePicture(file);
+      setPreviewURL(URL.createObjectURL(file));
+    }
+  };
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-5 h-full">
       <h2 className="text-3xl font-bold tracking-tight">Account Management</h2>
 
       <Tabs defaultValue="profile" className="w-full">
@@ -27,51 +83,61 @@ export function AccountManagement() {
             <CardContent className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src="/placeholder.svg?height=80&width=80" alt="Agent" />
+                  <AvatarImage src={agent.user.profilePicture ? `${import.meta.env.VITE_APP_API_URL}/${agent.user.profilePicture}` : previewURL} alt="Agent" />
                   <AvatarFallback>AG</AvatarFallback>
                 </Avatar>
                 <div>
-                  <Button size="sm">Upload new photo</Button>
-                  <p className="text-xs text-muted-foreground mt-1">JPG, GIF or PNG. 1MB max.</p>
+                  <input
+                    type="file"
+                    id="upload"
+                    hidden
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <Button size="sm" onClick={() => document.getElementById("upload")?.click()}>
+                    Upload new photo
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    JPG, GIF or PNG. 1MB max.
+                  </p>
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First name</Label>
-                  <Input id="firstName" defaultValue="Sarah" />
+                  <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last name</Label>
-                  <Input id="lastName" defaultValue="Johnson" />
+                  <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue="sarah.johnson@example.com" />
+
+                <Label htmlFor="sipUname">SIP Username</Label>
+                <Input id="sipUname" value={sipUname} onChange={(e) => setSipUname(e.target.value)} />
+
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone number</Label>
-                <Input id="phone" type="tel" defaultValue="(555) 123-4567" />
+                <Label htmlFor="phoneNumber">Phone number</Label>
+                <Input id="phoneNumber" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sipPassword">SIP Password</Label>
+                <Input
+                  id="sipPassword"
+                  type="password"
+                  value={sipPassword}
+                  onChange={(e) => setSipPassword(e.target.value)}
+                />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="department">Department</Label>
-                <Input id="department" defaultValue="Customer Support" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="employeeId">Employee ID</Label>
-                <div className="flex items-center gap-2">
-                  <Input id="employeeId" defaultValue="EMP-2023-0042" readOnly />
-                  <Badge>Verified</Badge>
-                </div>
-              </div>
             </CardContent>
             <CardFooter>
-              <Button>Save changes</Button>
+              <Button onClick={handleSubmit}>Save changes</Button>
             </CardFooter>
           </Card>
         </TabsContent>

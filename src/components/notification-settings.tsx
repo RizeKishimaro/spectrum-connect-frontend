@@ -84,12 +84,12 @@ export function NotificationSettings() {
   }
 
   return (
-    <Card>
+    <Card className="min-h-screen">
       <CardHeader>
         <CardTitle>Notification Settings</CardTitle>
         <CardDescription>Configure how you receive notifications</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 min-h-screen">
         {/* Settings Switches */}
         <div className="flex items-center justify-between">
           <div>
