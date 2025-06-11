@@ -52,12 +52,12 @@ export function AgentPortal() {
                 Open Phone
               </Button>
             </SheetTrigger>
-            <SheetContent className="sm:max-w-md p-0 bg-transparent border-none">
+            <SheetContent className="sm:max-w-xl p-0 bg-transparent border-none">
               <WebPhoneUI />
             </SheetContent>
           </Sheet>
         </header>
-        <main className="py-6 w-full">{renderContent()}</main>
+        <main className="py-6 w-full h-screen">{renderContent()}</main>
         <CallStatusIndicator />
       </SidebarInset>
     </div>

@@ -49,6 +49,7 @@ interface WebPhoneContextType {
   dialContact: (number: string) => void
   getStatusColor: () => string
   getStatusText: () => string
+  handleSendDTMF: () => void
 }
 
 const WebPhoneContext = createContext<WebPhoneContextType | undefined>(undefined)
@@ -305,6 +306,11 @@ export function WebPhoneProvider({ children }: { children: React.ReactNode }) {
       sessionRef.current.refer(phoneNumber)
     }
   }
+  const handleSendDTMF = () => {
+    if (sessionRef.current && phoneNumber) {
+      sessionRef.current.sendDTMF(phoneNumber)
+    }
+  }
 
   const toggleMute = () => {
     if (sessionRef.current) {
@@ -334,14 +340,7 @@ export function WebPhoneProvider({ children }: { children: React.ReactNode }) {
   }
 
   const handleKeypadClick = (digit: string) => {
-
-    // If in a call, secounterSlicend DTMF
-    if (sessionRef.current && (phoneState === "oncall" || phoneState === "onhold")) {
-      sessionRef.current.sendDTMF(digit)
-    } else {
-
-      dispatch(setPhoneNumber(phoneNumber + digit))
-    }
+    dispatch(setPhoneNumber(phoneNumber + digit))
   }
 
   const dialContact = (number: string) => {
@@ -404,6 +403,7 @@ export function WebPhoneProvider({ children }: { children: React.ReactNode }) {
     dialContact,
     getStatusColor,
     getStatusText,
+    handleSendDTMF
   }
 
   return <WebPhoneContext.Provider value={value}>{children}</WebPhoneContext.Provider>

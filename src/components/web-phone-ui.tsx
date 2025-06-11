@@ -12,6 +12,7 @@ import {
   ArrowRightLeft,
   Mic,
   MicOff,
+  PhoneIcon
 } from "lucide-react"
 import { useDispatch } from "react-redux"
 
@@ -30,12 +31,13 @@ export function WebPhoneUI() {
     handleKeypadClick,
     getStatusColor,
     getStatusText,
+    handleSendDTMF
   } = useWebPhone()
   const dispatch = useDispatch()
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-transparent p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="flex w-full justify-center items-center min-h-screen bg-transparent p-4">
+      <Card className="w-full max-w-lvh shadow-lg">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
             <CardTitle>Web Phone</CardTitle>
@@ -78,10 +80,10 @@ export function WebPhoneUI() {
             ))}
           </div>
 
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-5 gap-2 h-full">
             <Button
               variant={phoneState === "oncall" || phoneState === "onhold" || phoneState === "calling" || phoneState === "ringing" ? "destructive" : "default"}
-              className="flex flex-col items-center py-2"
+              className="flex flex-col items-center py-6"
               onClick={phoneState === "oncall" || phoneState === "onhold" || phoneState === "calling" || phoneState === "ringing" ? hangupCall : makeCall}
               disabled={phoneState === "disconnected" || (phoneState === "connected" && !phoneNumber)}
             >
@@ -94,7 +96,7 @@ export function WebPhoneUI() {
             </Button>
             <Button
               variant={phoneState === "onhold" ? "secondary" : "outline"}
-              className="flex flex-row items-center py-2"
+              className="flex flex-col items-center py-6"
               onClick={holdCall}
               disabled={phoneState !== "oncall" && phoneState !== "onhold"}
             >
@@ -104,18 +106,29 @@ export function WebPhoneUI() {
 
             <Button
               variant="outline"
-              className="flex flex-row items-center py-2"
+              className="flex flex-col items-center py-6"
               onClick={transferCall}
               disabled={phoneState !== "oncall" && phoneState !== "onhold"}
             >
               <ArrowRightLeft className="h-5 w-5 mb-1" />
               Transfer
             </Button>
+            <Button
+              variant="outline"
+              className="flex flex-col items-center py-6"
+              onClick={handleSendDTMF}
+              disabled={phoneState !== "oncall" && phoneState !== "onhold"}
+            >
+              <Phone className="h-5 w-5 mb-1" />
+              Send DTMF
+            </Button>
+
+
 
             {phoneState === "ringing" ? (
               <Button
                 variant="default"
-                className="flex flex-row items-center py-2 bg-green-600 hover:bg-green-700"
+                className="flex flex-col items-center py-6 bg-green-600 hover:bg-green-700"
                 onClick={answerCall}
               >
                 <Phone className="h-5 w-5 mb-1" />
@@ -124,7 +137,7 @@ export function WebPhoneUI() {
             ) : (
               <Button
                 variant="outline"
-                className="flex flex-row items-center py-2"
+                className="flex flex-col items-center py-6"
                 onClick={toggleMute}
                 disabled={phoneState !== "oncall" && phoneState !== "onhold"}
               >
