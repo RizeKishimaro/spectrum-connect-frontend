@@ -53,7 +53,7 @@ interface WebPhoneContextType {
 
 const WebPhoneContext = createContext<WebPhoneContextType | undefined>(undefined)
 export function WebPhoneProvider({ children }: { children: React.ReactNode }) {
-  const ringtone = new Audio("/src/assets/sounds/ringtone.mp3")
+  const ringtone = new Audio("/sounds/ringtone.mp3")
   ringtone.loop = true
   ringtone.volume = 1.0 // or adjust to taste 🍬
   //

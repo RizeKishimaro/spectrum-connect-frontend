@@ -60,7 +60,7 @@ export function WebPhoneUI() {
           {phoneState === "ringing" && (
             <div className="flex justify-center mb-4">
               <Badge variant="outline" className="bg-yellow-100 text-yellow-800 animate-pulse">
-                Incoming Call...
+                Incoming Call from {phoneNumber}
               </Badge>
             </div>
           )}

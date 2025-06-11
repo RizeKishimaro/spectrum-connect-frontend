@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Phone, PhoneOff } from "lucide-react"
 
 export function CallStatusIndicator() {
-  const { phoneState, hangupCall, answerCall } = useWebPhone()
+  const { phoneState, hangupCall, answerCall, phoneNumber } = useWebPhone()
 
   if (phoneState !== "oncall" && phoneState !== "onhold" && phoneState !== "ringing") {
     return null
@@ -36,7 +36,7 @@ export function CallStatusIndicator() {
             >
               <Phone className="h-4 w-4" />
             </button>
-            <span>Incoming Call</span>
+            <span>Incoming Call from {phoneNumber}</span>
           </>
         ) : (
           <>
